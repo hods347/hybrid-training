@@ -187,29 +187,29 @@ const WEEK_TEMPLATES = [
 // effort = RPE description shown on exercise card
 const DEFAULT_SESSIONS = {
   'Upper A': { type:'lift', exercises:[
-    {name:'Barbell Bench Press', sets:4, reps:'4-6', note:'Main press', effort:'RPE 8 — 2 reps in reserve', superset:'A'},
-    {name:'Barbell Row',         sets:4, reps:'4-6', note:'Main pull — rest 90s after each pair', effort:'RPE 8 — 2 reps in reserve', superset:'A'},
-    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — stop 2 short of failure', superset:'B'},
-    {name:'DB Shoulder Press',   sets:3, reps:'8-10', note:'DBs only — rest 90s after each pair', effort:'RPE 7-8 — 2-3 RIR', superset:'B'},
-    {name:'Weighted Dip',        sets:3, reps:'8-12', note:'Dip bars', effort:'RPE 8 — controlled descent'},
-    {name:'Face Pull',           sets:3, reps:'15-20', note:'Cable or band — shoulder health', effort:'RPE 6 — light, feel the squeeze'}
+    {name:'Barbell Bench Press', sets:4, reps:'4-6', note:'Main press — rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Barbell Row',         sets:4, reps:'4-6', note:'Main pull — rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — stop 2 short of failure', superset:'A'},
+    {name:'DB Shoulder Press',   sets:3, reps:'8-10', note:'DBs only — rest 90s after pair', effort:'RPE 7-8 — 2-3 RIR', superset:'A'},
+    {name:'Weighted Dip',        sets:3, reps:'8-12', note:'Dip bars', effort:'RPE 8 — controlled descent', superset:'B'},
+    {name:'Face Pull',           sets:3, reps:'15-20', note:'Cable or band — rest 60s after pair', effort:'RPE 6 — light, feel the squeeze', superset:'B'}
   ]},
   'Upper B': { type:'lift', exercises:[
     {name:'Incline DB Press',    sets:4, reps:'8-10', note:'Adjustable bench ~30-45°', effort:'RPE 8 — 2 RIR', superset:'A'},
-    {name:'Lat Pulldown',        sets:4, reps:'8-10', note:'Cable machine — rest 90s after each pair', effort:'RPE 8 — full stretch at top', superset:'A'},
+    {name:'Lat Pulldown',        sets:4, reps:'8-10', note:'Cable machine — rest 90s after pair', effort:'RPE 8 — full stretch at top', superset:'A'},
     {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — 2 RIR', superset:'B'},
-    {name:'Rear Delt Fly',       sets:3, reps:'15-20', note:'DB or cable — rest 60s after each pair', effort:'RPE 7 — squeeze at peak', superset:'B'},
-    {name:'DB Lateral Raise',    sets:4, reps:'15-20', note:'Shoulder hypertrophy', effort:'RPE 7 — controlled, no swinging', superset:'C'},
-    {name:'Hammer Curl',         sets:3, reps:'10-12', note:'Rest 60s after each pair', effort:'RPE 8 — 2 RIR', superset:'C'},
-    {name:'Tricep Pushdown',     sets:3, reps:'10-12', note:'Cable machine', effort:'RPE 8 — full lockout'}
+    {name:'Rear Delt Fly',       sets:3, reps:'15-20', note:'DB or cable — rest 60s after pair', effort:'RPE 7 — squeeze at peak', superset:'B'},
+    {name:'DB Lateral Raise',    sets:4, reps:'15-20', note:'Shoulder hypertrophy — rest 60s', effort:'RPE 7 — controlled, no swinging'},
+    {name:'Hammer Curl',         sets:3, reps:'10-12', note:'Rest 60s after pair', effort:'RPE 8 — 2 RIR', superset:'C'},
+    {name:'Tricep Pushdown',     sets:3, reps:'10-12', note:'Cable machine — rest 60s after pair', effort:'RPE 8 — full lockout', superset:'C'}
   ]},
   'Lower A': { type:'lift', exercises:[
-    {name:'Barbell Back Squat',  sets:4, reps:'4-6', note:'Squat rack — main movement, rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
-    {name:'Romanian Deadlift',   sets:3, reps:'6-8', note:'Duffalo bar or straight bar — rest 2-3 min', effort:'RPE 8 — feel the hamstring stretch'},
-    {name:'Nordic Curl',         sets:3, reps:'3-5', note:'Nordic curl machine — eccentric focus', effort:'RPE 8-9 — slow lower, 3-4 sec', superset:'A'},
-    {name:'45° Hyperextension',  sets:3, reps:'10-15', note:'Bodyweight or plate — rest 90s after pair', effort:'RPE 7 — squeeze glutes at top', superset:'A'},
-    {name:'Bulgarian Split Squat',sets:3,reps:'8-10 ea',note:'DB loaded, rear foot elevated', effort:'RPE 8 — 2 RIR each leg', superset:'B'},
-    {name:'Calf Raise',          sets:4, reps:'15-20', note:'Rest 60s after each pair', effort:'RPE 8 — full ROM, pause at top', superset:'B'}
+    {name:'Barbell Back Squat',   sets:4, reps:'4-6',    note:'Squat rack — main movement, rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Romanian Deadlift',    sets:3, reps:'6-8',    note:'Duffalo bar or straight bar — rest 2-3 min', effort:'RPE 8 — feel the hamstring stretch'},
+    {name:'Nordic Curl',          sets:3, reps:'3-5',    note:'Nordic curl machine — eccentric focus, rest 2 min', effort:'RPE 8-9 — slow lower, 3-4 sec'},
+    {name:'45° Hyperextension',   sets:3, reps:'10-15',  note:'Bodyweight or plate — rest 90s', effort:'RPE 7 — squeeze glutes at top'},
+    {name:'Bulgarian Split Squat',sets:3, reps:'8-10 ea',note:'DB loaded, rear foot elevated', effort:'RPE 8 — 2 RIR each leg', superset:'A'},
+    {name:'Calf Raise',           sets:4, reps:'15-20',  note:'Rest 60s after pair', effort:'RPE 8 — full ROM, pause at top', superset:'A'}
   ]},
   'Upper A (deload)': { type:'lift', exercises:[
     {name:'Barbell Bench Press', sets:3, reps:'4-6', note:'~60% of working weight', effort:'RPE 6 — should feel easy', superset:'A'},
