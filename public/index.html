@@ -170,7 +170,7 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.0
 </nav>
 <div id="toast"></div>
 <script>
-const STORAGE_KEY = 'hybrid_training_v4';
+const STORAGE_KEY = 'hybrid_training_v5';
 const LIFT_DAYS = [1,3,5];
 const RUN_DAYS = [2,4,6];
 
@@ -179,9 +179,9 @@ const BLOCK1_START = '2026-05-04';
 
 const WEEK_TEMPLATES = [
   { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W1','Tempo W1','Intervals W1'] },
-  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W2','Tempo W2','Intervals W2'] },
-  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W3','Tempo W3','Intervals W3'] },
-  { lift: ['Upper A (deload)','Lower A (deload)','Upper B (deload)'], run: ['Easy Run W4','Easy Run W4b','Easy Run W4c'] }
+  { lift: ['Lower B','Upper A','Lower A'], run: ['Easy / Zone 2 W2','Tempo W2','Intervals W2'] },
+  { lift: ['Upper B','Lower B','Upper A'], run: ['Easy / Zone 2 W3','Tempo W3','Intervals W3'] },
+  { lift: ['Lower A (deload)','Upper B (deload)','Lower B (deload)'], run: ['Easy Run W4','Easy Run W4b','Easy Run W4c'] }
 ];
 
 // effort = RPE description shown on exercise card
@@ -226,6 +226,19 @@ const DEFAULT_SESSIONS = {
     {name:'Incline DB Press',    sets:3, reps:'8-10', note:'~60% load', effort:'RPE 6 — easy', superset:'A'},
     {name:'Lat Pulldown',        sets:3, reps:'8-10', note:'Light', effort:'RPE 6 — full ROM focus', superset:'A'},
     {name:'DB Lateral Raise',    sets:3, reps:'15-20', note:'Light weight', effort:'RPE 6 — pump only'}
+  ]},
+  'Lower B': { type:'lift', exercises:[
+    {name:'Barbell Deadlift',         sets:4, reps:'3-5',    note:'Duffalo bar or straight bar — main hinge, rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Barbell Hip Thrust',       sets:3, reps:'8-10',   note:'Bench for upper back support — rest 2 min', effort:'RPE 8 — full hip extension, squeeze at top'},
+    {name:'DB Step-Up',               sets:3, reps:'8-10 ea',note:'Plyo box — controlled, knee tracking', effort:'RPE 7-8 — 2 RIR each leg', superset:'A'},
+    {name:'Leg Curl (DB or Machine)', sets:3, reps:'10-12',  note:'DB between feet or cable — rest 90s after pair', effort:'RPE 8 — 2 RIR', superset:'A'},
+    {name:'Calf Raise',               sets:4, reps:'15-20',  note:'Single or double leg', effort:'RPE 8 — full ROM, pause at top', superset:'B'},
+    {name:'Dead Bug / Ab Wheel',      sets:3, reps:'8-10',   note:'Core finisher — rest 60s after pair', effort:'RPE 7 — controlled, lower back flat', superset:'B'}
+  ]},
+  'Lower B (deload)': { type:'lift', exercises:[
+    {name:'Barbell Deadlift',   sets:3, reps:'3-5',    note:'~60% load — focus on feel', effort:'RPE 6 — no grinding'},
+    {name:'Barbell Hip Thrust', sets:2, reps:'8-10',   note:'Light', effort:'RPE 6 — easy'},
+    {name:'DB Step-Up',         sets:2, reps:'8-10 ea',note:'Bodyweight or light DBs', effort:'RPE 5-6 — recovery only'}
   ]},
 
   // RUNNING — gradual build from ~30min/week base
@@ -273,7 +286,7 @@ function getMonday(dt) { // accepts Date object, returns Date object (Monday of 
 }
 
 function initState() {
-  return { version:4, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
+  return { version:5, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
 }
 
 function generateBlock(num, startDate) {
@@ -298,7 +311,7 @@ function generateBlock(num, startDate) {
 
 let STATE = load() || initState();
 // Migrate old v1 data to v2 if needed
-if (STATE.version !== 4) { STATE = initState(); save(STATE); }
+if (STATE.version !== 5) { STATE = initState(); save(STATE); }
 let weekOffset = 0;
 let currentSessionKey = null;
 let sessionLogData = {};
