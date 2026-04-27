@@ -170,7 +170,7 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.0
 </nav>
 <div id="toast"></div>
 <script>
-const STORAGE_KEY = 'hybrid_training_v2';
+const STORAGE_KEY = 'hybrid_training_v3';
 const LIFT_DAYS = [1,3,5];
 const RUN_DAYS = [2,4,6];
 
@@ -328,12 +328,19 @@ function renderWeek() {
   document.getElementById('week-label').textContent = `${formatDate(dateKey(base))} – ${formatDate(dateKey(wend))}`;
   const block = currentBlock();
   const bs = parseDateKey(block.start);
-  const elapsed = Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
-  const pct = Math.round(elapsed/28*100);
-  const wkNum = Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diffDays = Math.floor((todayMidnight - bs) / 86400000);
+  const elapsed = Math.max(0, Math.min(28, diffDays));
+  const daysUntilStart = Math.max(0, -diffDays);
+  const pct = Math.round(elapsed / 28 * 100);
+  const wkNum = elapsed === 0 && diffDays < 0 ? 1 : Math.min(4, Math.max(1, Math.ceil((elapsed + 1) / 7)));
+  const remaining = Math.max(0, 28 - elapsed);
+  const bannerSub = diffDays < 0
+    ? `Starts in ${daysUntilStart} day${daysUntilStart !== 1 ? 's' : ''} · ${block.focus}`
+    : `${remaining} day${remaining !== 1 ? 's' : ''} remaining · ${block.focus}`;
   const banner = document.getElementById('block-banner');
   banner.style.display='block';
-  banner.innerHTML=`<div style="font-size:12px;font-weight:600;color:var(--accent)">Block ${block.num} · Week ${wkNum}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${Math.max(0,28-elapsed)} days remaining · ${block.focus}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+  banner.innerHTML=`<div style="font-size:12px;font-weight:600;color:var(--accent)">Block ${block.num} · Week ${wkNum}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${bannerSub}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
   const grid = document.getElementById('day-grid');
   grid.innerHTML='';
   for (let d=0;d<7;d++) {
@@ -541,8 +548,10 @@ function renderProgram() {
   const block=currentBlock();
   const today=new Date();
   const bs=parseDateKey(block.start);
-  const elapsed=Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
-  const wkNum=Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
+  const todayMidnight2=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const diffDays2=Math.floor((todayMidnight2-bs)/86400000);
+  const elapsed=Math.max(0,Math.min(28,diffDays2));
+  const wkNum=diffDays2<0?1:Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
   body.innerHTML+=`<div class="card mb-16"><div class="flex-between" style="margin-bottom:6px"><div><div style="font-size:17px;font-weight:600">Block ${block.num}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Starts ${formatDate(block.start)}</div></div><span class="tag tag-lift">${block.focus}</span></div><div style="font-size:13px;color:var(--text2);margin-top:4px">4-week hybrid · Upper/Lower lifting · Gradual run build from ~30 min/week base</div></div>`;
   body.innerHTML+=`<div class="checkin-card">
     <div class="checkin-title">Block ${block.num+1} Check-In ✦</div>
