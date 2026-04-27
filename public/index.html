@@ -170,12 +170,12 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.0
 </nav>
 <div id="toast"></div>
 <script>
-const STORAGE_KEY = 'hybrid_training_v3';
+const STORAGE_KEY = 'hybrid_training_v4';
 const LIFT_DAYS = [1,3,5];
 const RUN_DAYS = [2,4,6];
 
-// Block 1 starts May 4 2025
-const BLOCK1_START = '2025-05-04';
+// Block 1 starts May 4 2026
+const BLOCK1_START = '2026-05-04';
 
 const WEEK_TEMPLATES = [
   { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W1','Tempo W1','Intervals W1'] },
@@ -273,7 +273,7 @@ function getMonday(dt) { // accepts Date object, returns Date object (Monday of 
 }
 
 function initState() {
-  return { version:2, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
+  return { version:4, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
 }
 
 function generateBlock(num, startDate) {
@@ -298,7 +298,7 @@ function generateBlock(num, startDate) {
 
 let STATE = load() || initState();
 // Migrate old v1 data to v2 if needed
-if (STATE.version !== 2) { STATE = initState(); save(STATE); }
+if (STATE.version !== 4) { STATE = initState(); save(STATE); }
 let weekOffset = 0;
 let currentSessionKey = null;
 let sessionLogData = {};
