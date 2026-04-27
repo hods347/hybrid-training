@@ -252,11 +252,25 @@ const DEFAULT_SESSIONS = {
 
 function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null; } catch { return null; } }
 function save(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-// Always use LOCAL date to avoid UTC timezone shifting days
-function dateKey(d) { const dt=new Date(d); const y=dt.getFullYear(); const m=String(dt.getMonth()+1).padStart(2,'0'); const day=String(dt.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
-function formatDate(d) { return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
-function dow(d) { return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(d+'T00:00:00').getDay()]; }
-function getMonday(d) { const dt=new Date(d); const day=dt.getDay(); dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt; }
+// Date utilities — all local-time safe, no UTC shifting
+// Always pass a real Date object internally; dateKey/formatDate/dow accept Date objects only
+function localDate(y,m,d) { return new Date(y, m, d); } // month is 0-based
+function dateKey(dt) { // dt must be a Date object
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+}
+function parseDateKey(s) { // 'YYYY-MM-DD' -> local Date
+  const p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]);
+}
+function formatDate(s) { // accepts 'YYYY-MM-DD' string
+  const dt=parseDateKey(s); return dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function dow(s) { // accepts 'YYYY-MM-DD' string
+  return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][parseDateKey(s).getDay()];
+}
+function getMonday(dt) { // accepts Date object, returns Date object (Monday of that week)
+  const d=new Date(dt); const day=d.getDay();
+  d.setDate(d.getDate()-day+(day===0?-6:1)); d.setHours(0,0,0,0); return d;
+}
 
 function initState() {
   return { version:2, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
@@ -310,10 +324,10 @@ function renderWeek() {
   const base = getMonday(today);
   base.setDate(base.getDate()+weekOffset*7);
   const wend = new Date(base); wend.setDate(base.getDate()+6);
-  document.getElementById('week-heading').textContent = weekOffset===0?'This Week':weekOffset===-1?'Last Week':weekOffset===1?'Next Week':formatDate(base);
-  document.getElementById('week-label').textContent = `${formatDate(base)} – ${formatDate(wend)}`;
+  document.getElementById('week-heading').textContent = weekOffset===0?'This Week':weekOffset===-1?'Last Week':weekOffset===1?'Next Week':formatDate(dateKey(base));
+  document.getElementById('week-label').textContent = `${formatDate(dateKey(base))} – ${formatDate(dateKey(wend))}`;
   const block = currentBlock();
-  const bs = new Date(block.start + 'T00:00:00');
+  const bs = parseDateKey(block.start);
   const elapsed = Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
   const pct = Math.round(elapsed/28*100);
   const wkNum = Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
@@ -341,7 +355,7 @@ function renderWeek() {
     const card=document.createElement('div');
     card.className=`day-card ${type}`;
     if (type!=='rest') card.onclick=()=>openSession(dk);
-    card.innerHTML=`<div class="day-inner"><div><div class="day-name">${dow(dt)} · ${formatDate(dt)}</div><div class="day-title">${sname.replace(/ W[1-4][abc]?$/,'')}</div>${sub?`<div class="day-sub">${sub}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="status-pill ${statusClass}">${statusText}</span>${type!=='rest'?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`:''}</div></div>`;
+    card.innerHTML=`<div class="day-inner"><div><div class="day-name">${dow(dk)} · ${formatDate(dk)}</div><div class="day-title">${sname.replace(/ W[1-4][abc]?$/,'')}</div>${sub?`<div class="day-sub">${sub}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="status-pill ${statusClass}">${statusText}</span>${type!=='rest'?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`:''}</div></div>`;
     grid.appendChild(card);
   }
 }
@@ -356,7 +370,7 @@ function openSession(dk) {
   if (!det) return;
   const dt=new Date(dk);
   document.getElementById('session-title').textContent=planned.name.replace(/ W[1-4][abc]?$/,'');
-  document.getElementById('session-date').textContent=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('session-date').textContent=parseDateKey(dk).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   const body=document.getElementById('session-body');
   body.innerHTML='';
   if (det.type==='lift') renderLiftSession(body,det,dk);
@@ -526,7 +540,7 @@ function renderProgram() {
   const body=document.getElementById('program-body'); body.innerHTML='';
   const block=currentBlock();
   const today=new Date();
-  const bs=new Date(block.start+'T00:00:00');
+  const bs=parseDateKey(block.start);
   const elapsed=Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
   const wkNum=Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
   body.innerHTML+=`<div class="card mb-16"><div class="flex-between" style="margin-bottom:6px"><div><div style="font-size:17px;font-weight:600">Block ${block.num}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Starts ${formatDate(block.start)}</div></div><span class="tag tag-lift">${block.focus}</span></div><div style="font-size:13px;color:var(--text2);margin-top:4px">4-week hybrid · Upper/Lower lifting · Gradual run build from ~30 min/week base</div></div>`;
@@ -655,7 +669,7 @@ function applyGeneratedBlock(generated,newNum) {
   newBlock.focus=generated.focus;
   prev.checkin={completedAt:new Date().toISOString()};
   STATE.blocks.push(newBlock); save(STATE);
-  renderProgram(); toast(`Block ${newNum} ready — starts ${formatDate(newStart)}`);
+  renderProgram(); toast(`Block ${newNum} ready — starts ${formatDate(dateKey(newStart))}`);
 }
 
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
