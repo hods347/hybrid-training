@@ -187,33 +187,33 @@ const WEEK_TEMPLATES = [
 // effort = RPE description shown on exercise card
 const DEFAULT_SESSIONS = {
   'Upper A': { type:'lift', exercises:[
-    {name:'Barbell Bench Press', sets:4, reps:'4-6', note:'Main horizontal push', effort:'RPE 8 — 2 reps in reserve'},
-    {name:'Barbell Row',         sets:4, reps:'4-6', note:'Main horizontal pull', effort:'RPE 8 — 2 reps in reserve'},
-    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — stop 2 short of failure'},
-    {name:'DB Shoulder Press',   sets:3, reps:'8-10', note:'Dumbbells only — shoulder-friendly', effort:'RPE 7-8 — 2-3 RIR'},
+    {name:'Barbell Bench Press', sets:4, reps:'4-6', note:'Main press', effort:'RPE 8 — 2 reps in reserve', superset:'A'},
+    {name:'Barbell Row',         sets:4, reps:'4-6', note:'Main pull — rest 90s after each pair', effort:'RPE 8 — 2 reps in reserve', superset:'A'},
+    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — stop 2 short of failure', superset:'B'},
+    {name:'DB Shoulder Press',   sets:3, reps:'8-10', note:'DBs only — rest 90s after each pair', effort:'RPE 7-8 — 2-3 RIR', superset:'B'},
     {name:'Weighted Dip',        sets:3, reps:'8-12', note:'Dip bars', effort:'RPE 8 — controlled descent'},
     {name:'Face Pull',           sets:3, reps:'15-20', note:'Cable or band — shoulder health', effort:'RPE 6 — light, feel the squeeze'}
   ]},
   'Upper B': { type:'lift', exercises:[
-    {name:'Incline DB Press',    sets:4, reps:'8-10', note:'Adjustable bench ~30-45°', effort:'RPE 8 — 2 RIR'},
-    {name:'Lat Pulldown',        sets:4, reps:'8-10', note:'Cable lat pulldown machine', effort:'RPE 8 — full stretch at top'},
-    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — 2 RIR'},
-    {name:'DB Lateral Raise',    sets:4, reps:'15-20', note:'Shoulder hypertrophy', effort:'RPE 7 — controlled, no swinging'},
-    {name:'Rear Delt Fly',       sets:3, reps:'15-20', note:'DB or cable', effort:'RPE 7 — squeeze at peak'},
-    {name:'Hammer Curl',         sets:3, reps:'10-12', note:'', effort:'RPE 8 — 2 RIR'},
+    {name:'Incline DB Press',    sets:4, reps:'8-10', note:'Adjustable bench ~30-45°', effort:'RPE 8 — 2 RIR', superset:'A'},
+    {name:'Lat Pulldown',        sets:4, reps:'8-10', note:'Cable machine — rest 90s after each pair', effort:'RPE 8 — full stretch at top', superset:'A'},
+    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — 2 RIR', superset:'B'},
+    {name:'Rear Delt Fly',       sets:3, reps:'15-20', note:'DB or cable — rest 60s after each pair', effort:'RPE 7 — squeeze at peak', superset:'B'},
+    {name:'DB Lateral Raise',    sets:4, reps:'15-20', note:'Shoulder hypertrophy', effort:'RPE 7 — controlled, no swinging', superset:'C'},
+    {name:'Hammer Curl',         sets:3, reps:'10-12', note:'Rest 60s after each pair', effort:'RPE 8 — 2 RIR', superset:'C'},
     {name:'Tricep Pushdown',     sets:3, reps:'10-12', note:'Cable machine', effort:'RPE 8 — full lockout'}
   ]},
   'Lower A': { type:'lift', exercises:[
-    {name:'Barbell Back Squat',  sets:4, reps:'4-6', note:'Squat rack', effort:'RPE 8 — 2 reps in reserve'},
-    {name:'Romanian Deadlift',   sets:3, reps:'6-8', note:'Duffalo bar or straight bar', effort:'RPE 8 — feel the hamstring stretch'},
-    {name:'Nordic Curl',         sets:3, reps:'3-5', note:'Nordic curl machine — eccentric focus', effort:'RPE 8-9 — slow lower, 3-4 sec'},
-    {name:'45° Hyperextension',  sets:3, reps:'10-15', note:'Bodyweight or plate', effort:'RPE 7 — squeeze glutes at top'},
-    {name:'Bulgarian Split Squat',sets:3,reps:'8-10 ea',note:'DB loaded, rear foot elevated', effort:'RPE 8 — 2 RIR each leg'},
-    {name:'Calf Raise',          sets:4, reps:'15-20', note:'Single or double leg', effort:'RPE 8 — full ROM, pause at top'}
+    {name:'Barbell Back Squat',  sets:4, reps:'4-6', note:'Squat rack — main movement, rest 3 min', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Romanian Deadlift',   sets:3, reps:'6-8', note:'Duffalo bar or straight bar — rest 2-3 min', effort:'RPE 8 — feel the hamstring stretch'},
+    {name:'Nordic Curl',         sets:3, reps:'3-5', note:'Nordic curl machine — eccentric focus', effort:'RPE 8-9 — slow lower, 3-4 sec', superset:'A'},
+    {name:'45° Hyperextension',  sets:3, reps:'10-15', note:'Bodyweight or plate — rest 90s after pair', effort:'RPE 7 — squeeze glutes at top', superset:'A'},
+    {name:'Bulgarian Split Squat',sets:3,reps:'8-10 ea',note:'DB loaded, rear foot elevated', effort:'RPE 8 — 2 RIR each leg', superset:'B'},
+    {name:'Calf Raise',          sets:4, reps:'15-20', note:'Rest 60s after each pair', effort:'RPE 8 — full ROM, pause at top', superset:'B'}
   ]},
   'Upper A (deload)': { type:'lift', exercises:[
-    {name:'Barbell Bench Press', sets:3, reps:'4-6', note:'~60% of working weight', effort:'RPE 6 — should feel easy'},
-    {name:'Barbell Row',         sets:3, reps:'4-6', note:'~60% load', effort:'RPE 6 — easy, smooth reps'},
+    {name:'Barbell Bench Press', sets:3, reps:'4-6', note:'~60% of working weight', effort:'RPE 6 — should feel easy', superset:'A'},
+    {name:'Barbell Row',         sets:3, reps:'4-6', note:'~60% load', effort:'RPE 6 — easy, smooth reps', superset:'A'},
     {name:'Pull-Up',             sets:2, reps:'6-8', note:'Bodyweight only', effort:'RPE 6 — no added weight'},
     {name:'DB Shoulder Press',   sets:2, reps:'8-10', note:'Light DBs', effort:'RPE 5-6 — recovery effort'}
   ]},
@@ -223,8 +223,8 @@ const DEFAULT_SESSIONS = {
     {name:'Nordic Curl',         sets:2, reps:'3-4', note:'Slow eccentric', effort:'RPE 7 — controlled only'}
   ]},
   'Upper B (deload)': { type:'lift', exercises:[
-    {name:'Incline DB Press',    sets:3, reps:'8-10', note:'~60% load', effort:'RPE 6 — easy'},
-    {name:'Lat Pulldown',        sets:3, reps:'8-10', note:'Light', effort:'RPE 6 — full ROM focus'},
+    {name:'Incline DB Press',    sets:3, reps:'8-10', note:'~60% load', effort:'RPE 6 — easy', superset:'A'},
+    {name:'Lat Pulldown',        sets:3, reps:'8-10', note:'Light', effort:'RPE 6 — full ROM focus', superset:'A'},
     {name:'DB Lateral Raise',    sets:3, reps:'15-20', note:'Light weight', effort:'RPE 6 — pump only'}
   ]},
 
@@ -388,45 +388,97 @@ function openSession(dk) {
 
 function renderLiftSession(body,det,dk) {
   const logged=STATE.log[dk];
+
+  // Group exercises by superset label, preserving order
+  // Build a list of groups: [{supersetLabel, exercises:[{ex,ei}]}]
+  const groups = [];
+  const seen = {};
   det.exercises.forEach((ex,ei)=>{
-    const exLog=(logged&&logged.exercises&&logged.exercises[ei])||{sets:[]};
-    const ns=Math.max(ex.sets, exLog.sets.length||ex.sets);
-    let rows='';
-    for(let s=0;s<ns;s++){
-      const sd=exLog.sets[s]||{};
-      rows+=`<tr>
-        <td style="color:var(--text3);font-size:12px;width:20px">${s+1}</td>
-        <td><input type="number" placeholder="lb" value="${sd.weight||''}" onchange="updateSet('${dk}',${ei},${s},'weight',this.value)" inputmode="decimal"></td>
-        <td><input type="number" placeholder="reps" value="${sd.reps||''}" onchange="updateSet('${dk}',${ei},${s},'reps',this.value)" inputmode="numeric"></td>
-        <td><div class="rpe-btns">${[6,7,8,9,10].map(r=>`<button class="rpe-btn${sd.rpe===r?' active':''}" onclick="setRPE('${dk}',${ei},${s},${r},this)">${r}</button>`).join('')}</div></td>
-      </tr>`;
+    const ss = ex.superset || null;
+    if (ss && seen[ss] !== undefined) {
+      groups[seen[ss]].exercises.push({ex,ei});
+    } else {
+      seen[ss] = groups.length;
+      groups.push({supersetLabel: ss, exercises:[{ex,ei}]});
     }
-    const loggedCount=exLog.sets.filter(s=>s.weight).length;
-    const card=document.createElement('div');
-    card.className='exercise-card';
-    card.innerHTML=`
-      <div class="ex-header" onclick="this.nextElementSibling.classList.toggle('open')">
-        <div style="flex:1">
-          <div class="ex-name">${ex.name}</div>
-          <div class="ex-meta">${ex.sets}×${ex.reps}${ex.note?' · '+ex.note:''}</div>
-          <div class="ex-effort">⚡ ${ex.effort}</div>
-        </div>
-        <div style="font-size:12px;color:var(--accent);margin-left:8px;flex-shrink:0">${loggedCount>0?loggedCount+'✓':''}</div>
-      </div>
-      <div class="ex-body${logged?' open':''}">
-        <table class="sets-table">
-          <thead><tr><th></th><th>Weight</th><th>Reps</th><th>RPE</th></tr></thead>
-          <tbody id="sb-${ei}">${rows}</tbody>
-        </table>
-        <button class="add-set-btn" onclick="addSet('${dk}',${ei})">+ Add Set</button>
-      </div>`;
-    body.appendChild(card);
   });
+
+  const SUPERSET_COLORS = ['rgba(200,249,122,0.08)', 'rgba(122,184,249,0.08)', 'rgba(249,200,122,0.08)'];
+  const SUPERSET_BORDERS = ['rgba(200,249,122,0.3)', 'rgba(122,184,249,0.3)', 'rgba(249,200,122,0.3)'];
+  let colorIdx = 0;
+  const ssColorMap = {};
+
+  groups.forEach(group => {
+    if (group.supersetLabel) {
+      if (ssColorMap[group.supersetLabel] === undefined) {
+        ssColorMap[group.supersetLabel] = colorIdx++;
+      }
+    }
+
+    if (group.supersetLabel && group.exercises.length > 1) {
+      // Render as a superset block
+      const ci = ssColorMap[group.supersetLabel];
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = `border:1px solid ${SUPERSET_BORDERS[ci%3]};border-radius:12px;padding:8px;margin-bottom:10px;background:${SUPERSET_COLORS[ci%3]}`;
+
+      const ssLabel = document.createElement('div');
+      ssLabel.style.cssText = 'font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);padding:0 4px 6px;display:flex;align-items:center;gap:6px';
+      ssLabel.innerHTML = `<span style="display:inline-block;width:16px;height:1px;background:var(--text3)"></span>Superset ${group.supersetLabel}<span style="display:inline-block;width:16px;height:1px;background:var(--text3)"></span>`;
+      wrapper.appendChild(ssLabel);
+
+      group.exercises.forEach(({ex,ei}) => {
+        wrapper.appendChild(buildExerciseCard(ex, ei, dk, logged));
+      });
+      body.appendChild(wrapper);
+    } else {
+      // Single exercise, no superset wrapper
+      group.exercises.forEach(({ex,ei}) => {
+        body.appendChild(buildExerciseCard(ex, ei, dk, logged));
+      });
+    }
+  });
+
   const btn=document.createElement('button');
   btn.className='complete-btn';
   btn.textContent=logged?'Update Log':'Log Session';
   btn.onclick=()=>saveSession(dk);
   body.appendChild(btn);
+}
+
+function buildExerciseCard(ex, ei, dk, logged) {
+  const exLog=(logged&&logged.exercises&&logged.exercises[ei])||{sets:[]};
+  const ns=Math.max(ex.sets, exLog.sets.length||ex.sets);
+  let rows='';
+  for(let s=0;s<ns;s++){
+    const sd=exLog.sets[s]||{};
+    rows+=`<tr>
+      <td style="color:var(--text3);font-size:12px;width:20px">${s+1}</td>
+      <td><input type="number" placeholder="lb" value="${sd.weight||''}" onchange="updateSet('${dk}',${ei},${s},'weight',this.value)" inputmode="decimal"></td>
+      <td><input type="number" placeholder="reps" value="${sd.reps||''}" onchange="updateSet('${dk}',${ei},${s},'reps',this.value)" inputmode="numeric"></td>
+      <td><div class="rpe-btns">${[6,7,8,9,10].map(r=>`<button class="rpe-btn${sd.rpe===r?' active':''}" onclick="setRPE('${dk}',${ei},${s},${r},this)">${r}</button>`).join('')}</div></td>
+    </tr>`;
+  }
+  const loggedCount=exLog.sets.filter(s=>s.weight).length;
+  const card=document.createElement('div');
+  card.className='exercise-card';
+  card.style.marginBottom='8px';
+  card.innerHTML=`
+    <div class="ex-header" onclick="this.nextElementSibling.classList.toggle('open')">
+      <div style="flex:1">
+        <div class="ex-name">${ex.name}</div>
+        <div class="ex-meta">${ex.sets}×${ex.reps}${ex.note?' · '+ex.note:''}</div>
+        <div class="ex-effort">⚡ ${ex.effort}</div>
+      </div>
+      <div style="font-size:12px;color:var(--accent);margin-left:8px;flex-shrink:0">${loggedCount>0?loggedCount+'✓':''}</div>
+    </div>
+    <div class="ex-body${logged?' open':''}">
+      <table class="sets-table">
+        <thead><tr><th></th><th>Weight</th><th>Reps</th><th>RPE</th></tr></thead>
+        <tbody id="sb-${ei}">${rows}</tbody>
+      </table>
+      <button class="add-set-btn" onclick="addSet('${dk}',${ei})">+ Add Set</button>
+    </div>`;
+  return card;
 }
 
 function renderRunSession(body,det,dk) {
