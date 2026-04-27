@@ -9,25 +9,13 @@
 <link rel="manifest" href="/manifest.json">
 <style>
 :root {
-  --bg: #0a0a0a;
-  --bg2: #111111;
-  --bg3: #1a1a1a;
-  --bg4: #222222;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0f0f0;
-  --text2: #888;
-  --text3: #555;
-  --accent: #c8f97a;
-  --accent-dim: rgba(200,249,122,0.12);
-  --accent-dim2: rgba(200,249,122,0.06);
-  --run: #7ab8f9;
-  --run-dim: rgba(122,184,249,0.12);
-  --rest: #444;
-  --red: #f97a7a;
-  --amber: #f9c87a;
-  --radius: 10px;
-  --radius-sm: 6px;
+  --bg: #0a0a0a; --bg2: #111111; --bg3: #1a1a1a; --bg4: #222222;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f0; --text2: #888; --text3: #555;
+  --accent: #c8f97a; --accent-dim: rgba(200,249,122,0.12); --accent-dim2: rgba(200,249,122,0.06);
+  --run: #7ab8f9; --run-dim: rgba(122,184,249,0.12);
+  --rest: #444; --red: #f97a7a; --amber: #f9c87a;
+  --radius: 10px; --radius-sm: 6px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; -webkit-font-smoothing: antialiased; }
@@ -42,7 +30,6 @@ body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; 
 h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
 h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
 h3 { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; }
-p { color: var(--text2); line-height: 1.5; }
 .card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
 .week-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .week-nav { display: flex; align-items: center; gap: 10px; }
@@ -69,9 +56,10 @@ p { color: var(--text2); line-height: 1.5; }
 .session-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .back-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); padding: 8px 12px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; white-space: nowrap; }
 .exercise-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
-.ex-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.ex-header { padding: 12px 14px; display: flex; justify-content: space-between; align-items: flex-start; cursor: pointer; }
 .ex-name { font-size: 15px; font-weight: 500; }
-.ex-target { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.ex-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.ex-effort { font-size: 11px; color: var(--amber); margin-top: 3px; font-weight: 500; }
 .ex-body { padding: 12px 14px 14px; display: none; border-top: 1px solid var(--border); }
 .ex-body.open { display: block; }
 .sets-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 10px; }
@@ -127,7 +115,6 @@ p { color: var(--text2); line-height: 1.5; }
 .tag-rest { background: rgba(255,255,255,0.05); color: var(--text3); }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .mb-16 { margin-bottom: 16px; }
-.mt-12 { margin-top: 12px; }
 .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 14px; line-height: 1.7; }
 #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(16px); background: var(--bg3); border: 1px solid var(--border2); color: var(--text); padding: 10px 18px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all 0.25s; z-index: 200; white-space: nowrap; pointer-events: none; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -183,82 +170,99 @@ p { color: var(--text2); line-height: 1.5; }
 </nav>
 <div id="toast"></div>
 <script>
-const STORAGE_KEY = 'hybrid_training_v1';
+const STORAGE_KEY = 'hybrid_training_v2';
 const LIFT_DAYS = [1,3,5];
 const RUN_DAYS = [2,4,6];
 
+// Block 1 starts May 4 2025
+const BLOCK1_START = '2025-05-04';
+
 const WEEK_TEMPLATES = [
-  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2','Tempo','Intervals'] },
-  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2','Tempo','Intervals'] },
-  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2','Tempo','Long Intervals'] },
-  { lift: ['Upper A (deload)','Lower A (deload)','Upper B (deload)'], run: ['Easy / Zone 2','Easy / Zone 2','Easy Run'] }
+  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W1','Tempo W1','Intervals W1'] },
+  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W2','Tempo W2','Intervals W2'] },
+  { lift: ['Upper A','Lower A','Upper B'], run: ['Easy / Zone 2 W3','Tempo W3','Intervals W3'] },
+  { lift: ['Upper A (deload)','Lower A (deload)','Upper B (deload)'], run: ['Easy Run W4','Easy Run W4b','Easy Run W4c'] }
 ];
 
+// effort = RPE description shown on exercise card
 const DEFAULT_SESSIONS = {
   'Upper A': { type:'lift', exercises:[
-    {name:'Barbell Bench Press',sets:4,reps:'4-6',note:'Main horizontal push'},
-    {name:'Barbell Row',sets:4,reps:'4-6',note:'Main horizontal pull'},
-    {name:'Weighted Pull-Up',sets:3,reps:'6-8',note:'Pullup bar + dumbbell'},
-    {name:'Dumbbell OHP',sets:3,reps:'8-10',note:''},
-    {name:'Weighted Dip',sets:3,reps:'8-12',note:'Dip bars'},
-    {name:'Face Pull',sets:3,reps:'15-20',note:'Shoulder health'}
+    {name:'Barbell Bench Press', sets:4, reps:'4-6', note:'Main horizontal push', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Barbell Row',         sets:4, reps:'4-6', note:'Main horizontal pull', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — stop 2 short of failure'},
+    {name:'DB Shoulder Press',   sets:3, reps:'8-10', note:'Dumbbells only — shoulder-friendly', effort:'RPE 7-8 — 2-3 RIR'},
+    {name:'Weighted Dip',        sets:3, reps:'8-12', note:'Dip bars', effort:'RPE 8 — controlled descent'},
+    {name:'Face Pull',           sets:3, reps:'15-20', note:'Cable or band — shoulder health', effort:'RPE 6 — light, feel the squeeze'}
   ]},
   'Upper B': { type:'lift', exercises:[
-    {name:'Incline DB Press',sets:4,reps:'8-10',note:'Adjustable bench'},
-    {name:'Weighted Pull-Up',sets:4,reps:'6-8',note:''},
-    {name:'Dumbbell Row',sets:3,reps:'10-12',note:''},
-    {name:'Lateral Raise',sets:4,reps:'15-20',note:'Shoulder hypertrophy'},
-    {name:'Rear Delt Fly',sets:3,reps:'15-20',note:''},
-    {name:'Hammer Curl',sets:3,reps:'10-12',note:''},
-    {name:'Tricep Dip',sets:3,reps:'10-12',note:'Dip bars'}
+    {name:'Incline DB Press',    sets:4, reps:'8-10', note:'Adjustable bench ~30-45°', effort:'RPE 8 — 2 RIR'},
+    {name:'Lat Pulldown',        sets:4, reps:'8-10', note:'Cable lat pulldown machine', effort:'RPE 8 — full stretch at top'},
+    {name:'Weighted Pull-Up',    sets:3, reps:'6-8', note:'Pullup bar + dumbbell', effort:'RPE 8 — 2 RIR'},
+    {name:'DB Lateral Raise',    sets:4, reps:'15-20', note:'Shoulder hypertrophy', effort:'RPE 7 — controlled, no swinging'},
+    {name:'Rear Delt Fly',       sets:3, reps:'15-20', note:'DB or cable', effort:'RPE 7 — squeeze at peak'},
+    {name:'Hammer Curl',         sets:3, reps:'10-12', note:'', effort:'RPE 8 — 2 RIR'},
+    {name:'Tricep Pushdown',     sets:3, reps:'10-12', note:'Cable machine', effort:'RPE 8 — full lockout'}
   ]},
   'Lower A': { type:'lift', exercises:[
-    {name:'Barbell Back Squat',sets:4,reps:'4-6',note:'Squat rack'},
-    {name:'Romanian Deadlift',sets:3,reps:'6-8',note:'Duffalo bar option'},
-    {name:'Nordic Curl',sets:3,reps:'4-6',note:'Nordic curl machine'},
-    {name:'45° Hyperextension',sets:3,reps:'10-15',note:''},
-    {name:'Bulgarian Split Squat',sets:3,reps:'8-10 ea',note:'DB loaded'},
-    {name:'Calf Raise',sets:4,reps:'15-20',note:''}
+    {name:'Barbell Back Squat',  sets:4, reps:'4-6', note:'Squat rack', effort:'RPE 8 — 2 reps in reserve'},
+    {name:'Romanian Deadlift',   sets:3, reps:'6-8', note:'Duffalo bar or straight bar', effort:'RPE 8 — feel the hamstring stretch'},
+    {name:'Nordic Curl',         sets:3, reps:'3-5', note:'Nordic curl machine — eccentric focus', effort:'RPE 8-9 — slow lower, 3-4 sec'},
+    {name:'45° Hyperextension',  sets:3, reps:'10-15', note:'Bodyweight or plate', effort:'RPE 7 — squeeze glutes at top'},
+    {name:'Bulgarian Split Squat',sets:3,reps:'8-10 ea',note:'DB loaded, rear foot elevated', effort:'RPE 8 — 2 RIR each leg'},
+    {name:'Calf Raise',          sets:4, reps:'15-20', note:'Single or double leg', effort:'RPE 8 — full ROM, pause at top'}
   ]},
   'Upper A (deload)': { type:'lift', exercises:[
-    {name:'Barbell Bench Press',sets:3,reps:'4-6',note:'~60% load'},
-    {name:'Barbell Row',sets:3,reps:'4-6',note:'~60% load'},
-    {name:'Pull-Up',sets:2,reps:'6-8',note:'Bodyweight'},
-    {name:'Dumbbell OHP',sets:2,reps:'8-10',note:'Light'}
+    {name:'Barbell Bench Press', sets:3, reps:'4-6', note:'~60% of working weight', effort:'RPE 6 — should feel easy'},
+    {name:'Barbell Row',         sets:3, reps:'4-6', note:'~60% load', effort:'RPE 6 — easy, smooth reps'},
+    {name:'Pull-Up',             sets:2, reps:'6-8', note:'Bodyweight only', effort:'RPE 6 — no added weight'},
+    {name:'DB Shoulder Press',   sets:2, reps:'8-10', note:'Light DBs', effort:'RPE 5-6 — recovery effort'}
   ]},
   'Lower A (deload)': { type:'lift', exercises:[
-    {name:'Barbell Back Squat',sets:3,reps:'4-6',note:'~60% load'},
-    {name:'Romanian Deadlift',sets:2,reps:'6-8',note:'Light'},
-    {name:'Nordic Curl',sets:2,reps:'4-6',note:''}
+    {name:'Barbell Back Squat',  sets:3, reps:'4-6', note:'~60% load', effort:'RPE 6 — no grinding'},
+    {name:'Romanian Deadlift',   sets:2, reps:'6-8', note:'Light', effort:'RPE 6 — focus on feel'},
+    {name:'Nordic Curl',         sets:2, reps:'3-4', note:'Slow eccentric', effort:'RPE 7 — controlled only'}
   ]},
   'Upper B (deload)': { type:'lift', exercises:[
-    {name:'Incline DB Press',sets:3,reps:'8-10',note:'~60% load'},
-    {name:'Weighted Pull-Up',sets:3,reps:'6-8',note:''},
-    {name:'Lateral Raise',sets:3,reps:'15-20',note:''}
+    {name:'Incline DB Press',    sets:3, reps:'8-10', note:'~60% load', effort:'RPE 6 — easy'},
+    {name:'Lat Pulldown',        sets:3, reps:'8-10', note:'Light', effort:'RPE 6 — full ROM focus'},
+    {name:'DB Lateral Raise',    sets:3, reps:'15-20', note:'Light weight', effort:'RPE 6 — pump only'}
   ]},
-  'Easy / Zone 2': { type:'run', runType:'easy', target:{distance:'6-8 mi',duration:'60-75 min',effort:'Zone 2 — conversational pace'} },
-  'Tempo': { type:'run', runType:'tempo', target:{distance:'5-6 mi',duration:'45-55 min',effort:'Comfortably hard / threshold'} },
-  'Intervals': { type:'run', runType:'intervals', target:{distance:'5 mi total',duration:'40-50 min',effort:'6×800m @ 5K effort, 90s rest'} },
-  'Long Intervals': { type:'run', runType:'intervals', target:{distance:'6 mi total',duration:'50-60 min',effort:'4×1200m @ 10K effort, 2min rest'} },
-  'Easy Run': { type:'run', runType:'easy', target:{distance:'4-5 mi',duration:'40-50 min',effort:'Zone 2 deload'} }
+
+  // RUNNING — gradual build from ~30min/week base
+  // Week 1: conservative intro ~55-60 min total running
+  'Easy / Zone 2 W1':  { type:'run', runType:'easy',      target:{distance:'2.5-3 mi', duration:'30-35 min', effort:'Zone 2 — fully conversational, ~11:30-12:30/mi, HR <140'} },
+  'Tempo W1':          { type:'run', runType:'tempo',      target:{distance:'2 mi',     duration:'25-30 min', effort:'10 min easy warm-up + 10 min at tempo effort (~10:00-10:30/mi) + 5 min cool-down'} },
+  'Intervals W1':      { type:'run', runType:'intervals',  target:{distance:'2.5 mi',   duration:'30 min',    effort:'3×3 min at hard effort (5K feel), 3 min jog rest — warm up/down included'} },
+
+  // Week 2: slight step up ~65-75 min total
+  'Easy / Zone 2 W2':  { type:'run', runType:'easy',      target:{distance:'3-3.5 mi', duration:'35-42 min', effort:'Zone 2 — conversational, ~11:30-12:30/mi'} },
+  'Tempo W2':          { type:'run', runType:'tempo',      target:{distance:'2.5 mi',   duration:'30-35 min', effort:'10 min easy + 15 min tempo effort (~10:00-10:30/mi) + 5 min cool-down'} },
+  'Intervals W2':      { type:'run', runType:'intervals',  target:{distance:'3 mi',     duration:'35 min',    effort:'4×3 min hard (5K feel), 2:30 jog rest — warm up/down included'} },
+
+  // Week 3: continue building ~80-90 min total
+  'Easy / Zone 2 W3':  { type:'run', runType:'easy',      target:{distance:'3.5-4 mi', duration:'40-48 min', effort:'Zone 2 — conversational, ~11:30-12:30/mi'} },
+  'Tempo W3':          { type:'run', runType:'tempo',      target:{distance:'3 mi',     duration:'35-40 min', effort:'10 min easy + 20 min tempo (~10:00-10:30/mi) + 5 min cool-down'} },
+  'Intervals W3':      { type:'run', runType:'intervals',  target:{distance:'3.5 mi',   duration:'38 min',    effort:'5×3 min hard (5K feel), 2 min jog rest — warm up/down included'} },
+
+  // Week 4: deload — drop back to week 1 volume, all easy
+  'Easy Run W4':       { type:'run', runType:'easy',      target:{distance:'2-2.5 mi', duration:'25-30 min', effort:'Zone 2 only — very easy, deload week'} },
+  'Easy Run W4b':      { type:'run', runType:'easy',      target:{distance:'2 mi',     duration:'22-26 min', effort:'Zone 2 only — recovery run'} },
+  'Easy Run W4c':      { type:'run', runType:'easy',      target:{distance:'2-2.5 mi', duration:'25-30 min', effort:'Zone 2 only — keep it very easy'} }
 };
 
 function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null; } catch { return null; } }
 function save(d) { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-function getMonday(d) { const dt=new Date(d); const day=dt.getDay(); dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt; }
 function dateKey(d) { return new Date(d).toISOString().slice(0,10); }
 function formatDate(d) { return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
 function dow(d) { return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(d).getDay()]; }
+function getMonday(d) { const dt=new Date(d); const day=dt.getDay(); dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt; }
 
 function initState() {
-  const today = new Date();
-  const blockStart = getMonday(today);
-  if (today.getDay() !== 1) blockStart.setDate(blockStart.getDate()+7);
-  return { version:1, blocks:[generateBlock(1,blockStart)], log:{}, apiKey:'' };
+  return { version:2, blocks:[generateBlock(1, BLOCK1_START)], log:{}, apiKey:'' };
 }
 
 function generateBlock(num, startDate) {
-  const start = new Date(startDate);
+  const start = new Date(startDate + 'T00:00:00');
   const sessions = {};
   for (let week=0;week<4;week++) {
     const tmpl = WEEK_TEMPLATES[week];
@@ -273,10 +277,12 @@ function generateBlock(num, startDate) {
       else sessions[dk]={type:'rest',name:'Rest',week:week+1};
     }
   }
-  return {num,start:dateKey(start),focus:'Strength + Running Base',sessions,checkin:null};
+  return {num, start:dateKey(start), focus:'Strength + Running Base', sessions, checkin:null};
 }
 
 let STATE = load() || initState();
+// Migrate old v1 data to v2 if needed
+if (STATE.version !== 2) { STATE = initState(); save(STATE); }
 let weekOffset = 0;
 let currentSessionKey = null;
 let sessionLogData = {};
@@ -302,16 +308,16 @@ function renderWeek() {
   const base = getMonday(today);
   base.setDate(base.getDate()+weekOffset*7);
   const wend = new Date(base); wend.setDate(base.getDate()+6);
-  document.getElementById('week-heading').textContent = weekOffset===0?'This Week':weekOffset===-1?'Last Week':weekOffset===1?'Next Week':`${formatDate(base)}`;
+  document.getElementById('week-heading').textContent = weekOffset===0?'This Week':weekOffset===-1?'Last Week':weekOffset===1?'Next Week':formatDate(base);
   document.getElementById('week-label').textContent = `${formatDate(base)} – ${formatDate(wend)}`;
   const block = currentBlock();
-  const bs = new Date(block.start);
+  const bs = new Date(block.start + 'T00:00:00');
   const elapsed = Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
   const pct = Math.round(elapsed/28*100);
   const wkNum = Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
   const banner = document.getElementById('block-banner');
   banner.style.display='block';
-  banner.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:12px;font-weight:600;color:var(--accent)">Block ${block.num} · Week ${wkNum}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${Math.max(0,28-elapsed)} days remaining · ${block.focus}</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
+  banner.innerHTML=`<div style="font-size:12px;font-weight:600;color:var(--accent)">Block ${block.num} · Week ${wkNum}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${Math.max(0,28-elapsed)} days remaining · ${block.focus}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`;
   const grid = document.getElementById('day-grid');
   grid.innerHTML='';
   for (let d=0;d<7;d++) {
@@ -319,7 +325,7 @@ function renderWeek() {
     const dk=dateKey(dt);
     const isToday=dk===dateKey(today);
     let planned=null;
-    for (const blk of STATE.blocks) { if (blk.sessions[dk]) {planned=blk.sessions[dk];break;} }
+    for (const blk of STATE.blocks) { if(blk.sessions[dk]){planned=blk.sessions[dk];break;} }
     const logged=STATE.log[dk];
     const type=planned?planned.type:'rest';
     const sname=planned?planned.name:'Rest';
@@ -329,64 +335,111 @@ function renderWeek() {
     const det=DEFAULT_SESSIONS[sname];
     let sub='';
     if (det&&det.type==='lift') sub=det.exercises.slice(0,3).map(e=>e.name).join(' · ');
-    else if (det&&det.type==='run') sub=det.target.effort;
+    else if (det&&det.type==='run') sub=det.target.effort.split('—')[0].trim();
     const card=document.createElement('div');
     card.className=`day-card ${type}`;
     if (type!=='rest') card.onclick=()=>openSession(dk);
-    card.innerHTML=`<div class="day-inner"><div><div class="day-name">${dow(dt)} · ${formatDate(dt)}</div><div class="day-title">${sname}</div>${sub?`<div class="day-sub">${sub}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="status-pill ${statusClass}">${statusText}</span>${type!=='rest'?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`:''}</div></div>`;
+    card.innerHTML=`<div class="day-inner"><div><div class="day-name">${dow(dt)} · ${formatDate(dt)}</div><div class="day-title">${sname.replace(/ W[1-4][abc]?$/,'')}</div>${sub?`<div class="day-sub">${sub}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="status-pill ${statusClass}">${statusText}</span>${type!=='rest'?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>`:''}</div></div>`;
     grid.appendChild(card);
   }
 }
 
 function openSession(dk) {
-  currentSessionKey=dk; sessionLogData=STATE.log[dk]?JSON.parse(JSON.stringify(STATE.log[dk])):{};
+  currentSessionKey=dk;
+  sessionLogData=STATE.log[dk]?JSON.parse(JSON.stringify(STATE.log[dk])):{};
   let planned=null;
   for (const blk of STATE.blocks) { if(blk.sessions[dk]){planned=blk.sessions[dk];break;} }
   if (!planned) return;
   const det=DEFAULT_SESSIONS[planned.name];
   if (!det) return;
   const dt=new Date(dk);
-  document.getElementById('session-title').textContent=planned.name;
+  document.getElementById('session-title').textContent=planned.name.replace(/ W[1-4][abc]?$/,'');
   document.getElementById('session-date').textContent=dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
   const body=document.getElementById('session-body');
   body.innerHTML='';
-  if (det.type==='lift') renderLiftSession(body,det,dk,planned);
+  if (det.type==='lift') renderLiftSession(body,det,dk);
   else renderRunSession(body,det,dk);
   showScreen('session');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
 }
 
-function renderLiftSession(body,det,dk,planned) {
+function renderLiftSession(body,det,dk) {
   const logged=STATE.log[dk];
   det.exercises.forEach((ex,ei)=>{
     const exLog=(logged&&logged.exercises&&logged.exercises[ei])||{sets:[]};
-    const ns=Math.max(ex.sets,exLog.sets.length||ex.sets);
+    const ns=Math.max(ex.sets, exLog.sets.length||ex.sets);
     let rows='';
     for(let s=0;s<ns;s++){
       const sd=exLog.sets[s]||{};
-      rows+=`<tr><td style="color:var(--text3);font-size:12px;width:20px">${s+1}</td><td><input type="number" placeholder="lb" value="${sd.weight||''}" onchange="updateSet('${dk}',${ei},${s},'weight',this.value)" inputmode="decimal"></td><td><input type="number" placeholder="reps" value="${sd.reps||''}" onchange="updateSet('${dk}',${ei},${s},'reps',this.value)" inputmode="numeric"></td><td><div class="rpe-btns">${[6,7,8,9,10].map(r=>`<button class="rpe-btn${sd.rpe===r?' active':''}" onclick="setRPE('${dk}',${ei},${s},${r},this)">${r}</button>`).join('')}</div></td></tr>`;
+      rows+=`<tr>
+        <td style="color:var(--text3);font-size:12px;width:20px">${s+1}</td>
+        <td><input type="number" placeholder="lb" value="${sd.weight||''}" onchange="updateSet('${dk}',${ei},${s},'weight',this.value)" inputmode="decimal"></td>
+        <td><input type="number" placeholder="reps" value="${sd.reps||''}" onchange="updateSet('${dk}',${ei},${s},'reps',this.value)" inputmode="numeric"></td>
+        <td><div class="rpe-btns">${[6,7,8,9,10].map(r=>`<button class="rpe-btn${sd.rpe===r?' active':''}" onclick="setRPE('${dk}',${ei},${s},${r},this)">${r}</button>`).join('')}</div></td>
+      </tr>`;
     }
+    const loggedCount=exLog.sets.filter(s=>s.weight).length;
     const card=document.createElement('div');
     card.className='exercise-card';
-    card.innerHTML=`<div class="ex-header" onclick="this.nextElementSibling.classList.toggle('open')"><div><div class="ex-name">${ex.name}</div><div class="ex-target">${ex.sets}×${ex.reps}${ex.note?' · '+ex.note:''}</div></div><div style="font-size:12px;color:var(--text2)">${exLog.sets.filter(s=>s.weight).length>0?exLog.sets.filter(s=>s.weight).length+'✓':''}</div></div><div class="ex-body${logged?' open':''}"><table class="sets-table"><thead><tr><th></th><th>Weight</th><th>Reps</th><th>RPE</th></tr></thead><tbody id="sb-${ei}">${rows}</tbody></table><button class="add-set-btn" onclick="addSet('${dk}',${ei})">+ Add Set</button></div>`;
+    card.innerHTML=`
+      <div class="ex-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div style="flex:1">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">${ex.sets}×${ex.reps}${ex.note?' · '+ex.note:''}</div>
+          <div class="ex-effort">⚡ ${ex.effort}</div>
+        </div>
+        <div style="font-size:12px;color:var(--accent);margin-left:8px;flex-shrink:0">${loggedCount>0?loggedCount+'✓':''}</div>
+      </div>
+      <div class="ex-body${logged?' open':''}">
+        <table class="sets-table">
+          <thead><tr><th></th><th>Weight</th><th>Reps</th><th>RPE</th></tr></thead>
+          <tbody id="sb-${ei}">${rows}</tbody>
+        </table>
+        <button class="add-set-btn" onclick="addSet('${dk}',${ei})">+ Add Set</button>
+      </div>`;
     body.appendChild(card);
   });
   const btn=document.createElement('button');
   btn.className='complete-btn';
   btn.textContent=logged?'Update Log':'Log Session';
-  btn.onclick=()=>saveSession(dk,'lift');
+  btn.onclick=()=>saveSession(dk);
   body.appendChild(btn);
 }
 
 function renderRunSession(body,det,dk) {
   const logged=STATE.log[dk]||{};
   const bc=det.runType==='easy'?'var(--run)':det.runType==='tempo'?'var(--amber)':'var(--red)';
-  body.innerHTML=`<div class="card" style="border-left:3px solid ${bc};margin-bottom:12px"><h3 style="margin-bottom:8px">${det.name} — Target</h3><div style="font-size:14px;color:var(--text2);line-height:2"><div>Distance: <span style="color:var(--text)">${det.target.distance}</span></div><div>Duration: <span style="color:var(--text)">${det.target.duration}</span></div><div>Effort: <span style="color:var(--text)">${det.target.effort}</span></div></div></div><div class="card"><h3 style="margin-bottom:12px">Log Your Run</h3><div class="run-fields"><div class="field-group"><label>Distance (mi)</label><input type="number" step="0.1" inputmode="decimal" placeholder="6.2" id="log-dist" value="${logged.distance||''}"></div><div class="field-group"><label>Duration</label><input type="text" placeholder="55:00" id="log-dur" value="${logged.duration||''}"></div><div class="field-group"><label>Pace (min/mi)</label><input type="text" placeholder="8:50" id="log-pace" value="${logged.pace||''}"></div><div class="field-group"><label>RPE</label><select id="log-rpe">${[1,2,3,4,5,6,7,8,9,10].map(r=>`<option value="${r}"${logged.rpe===r?' selected':''}>${r}</option>`).join('')}</select></div></div><div class="field-group"><label style="margin-bottom:5px">Notes</label><textarea class="notes-input" id="log-notes" placeholder="How did it feel? Splits, conditions...">${logged.notes||''}</textarea></div></div><button class="complete-btn run-btn" onclick="saveRunSession('${dk}')">${logged.distance?'Update Log':'Log Run'}</button>`;
+  const typeLabel=det.runType==='easy'?'Easy / Zone 2':det.runType==='tempo'?'Tempo':'Intervals';
+  body.innerHTML=`
+    <div class="card" style="border-left:3px solid ${bc};margin-bottom:12px">
+      <h3 style="margin-bottom:10px">${typeLabel} — Target</h3>
+      <div style="font-size:14px;color:var(--text2);line-height:2.1">
+        <div>Distance: <span style="color:var(--text)">${det.target.distance}</span></div>
+        <div>Duration: <span style="color:var(--text)">${det.target.duration}</span></div>
+        <div style="margin-top:4px;padding:8px 10px;background:var(--bg4);border-radius:6px;font-size:13px;color:var(--text);line-height:1.5">${det.target.effort}</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:12px">Log Your Run</h3>
+      <div class="run-fields">
+        <div class="field-group"><label>Distance (mi)</label><input type="number" step="0.1" inputmode="decimal" placeholder="3.0" id="log-dist" value="${logged.distance||''}"></div>
+        <div class="field-group"><label>Duration</label><input type="text" placeholder="32:00" id="log-dur" value="${logged.duration||''}"></div>
+        <div class="field-group"><label>Pace (min/mi)</label><input type="text" placeholder="11:45" id="log-pace" value="${logged.pace||''}"></div>
+        <div class="field-group"><label>RPE</label>
+          <select id="log-rpe">${[1,2,3,4,5,6,7,8,9,10].map(r=>`<option value="${r}"${logged.rpe===r?' selected':''}>${r}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label style="margin-bottom:5px">Notes</label>
+        <textarea class="notes-input" id="log-notes" placeholder="How did it feel? Breathing, legs, conditions...">${logged.notes||''}</textarea>
+      </div>
+    </div>
+    <button class="complete-btn run-btn" onclick="saveRunSession('${dk}')">${logged.distance?'Update Log':'Log Run'}</button>`;
 }
 
 function updateSet(dk,ei,si,field,val) {
-  if (!sessionLogData.exercises) sessionLogData.exercises={};
-  if (!sessionLogData.exercises[ei]) sessionLogData.exercises[ei]={sets:[]};
+  if(!sessionLogData.exercises) sessionLogData.exercises={};
+  if(!sessionLogData.exercises[ei]) sessionLogData.exercises[ei]={sets:[]};
   while(sessionLogData.exercises[ei].sets.length<=si) sessionLogData.exercises[ei].sets.push({});
   sessionLogData.exercises[ei].sets[si][field]=field==='weight'?parseFloat(val):parseInt(val);
 }
@@ -398,8 +451,8 @@ function setRPE(dk,ei,si,rpe,btn) {
 }
 
 function addSet(dk,ei) {
-  if (!sessionLogData.exercises) sessionLogData.exercises={};
-  if (!sessionLogData.exercises[ei]) sessionLogData.exercises[ei]={sets:[]};
+  if(!sessionLogData.exercises) sessionLogData.exercises={};
+  if(!sessionLogData.exercises[ei]) sessionLogData.exercises[ei]={sets:[]};
   const si=sessionLogData.exercises[ei].sets.length;
   sessionLogData.exercises[ei].sets.push({});
   const tbody=document.getElementById(`sb-${ei}`);
@@ -422,7 +475,7 @@ function renderHistory() {
   const body=document.getElementById('hist-body'); body.innerHTML='';
   const exMap={}, runLog=[];
   Object.entries(STATE.log).forEach(([dk,log])=>{
-    if (log.type==='lift'&&log.exercises) {
+    if(log.type==='lift'&&log.exercises){
       let planned=null;
       for(const blk of STATE.blocks){if(blk.sessions[dk]){planned=blk.sessions[dk];break;}}
       if(!planned) return;
@@ -430,7 +483,7 @@ function renderHistory() {
       if(!det||!det.exercises) return;
       det.exercises.forEach((ex,ei)=>{
         const sets=((log.exercises[ei])||{sets:[]}).sets||[];
-        if(sets.filter(s=>s.weight).length===0) return;
+        if(!sets.some(s=>s.weight)) return;
         if(!exMap[ex.name]) exMap[ex.name]=[];
         exMap[ex.name].push({date:dk,sets});
       });
@@ -442,14 +495,15 @@ function renderHistory() {
   if(histFilter!=='run'){
     Object.entries(exMap).forEach(([name,sessions])=>{
       const sorted=sessions.sort((a,b)=>a.date.localeCompare(b.date));
-      const bests=sorted.map(s=>Math.max(...s.sets.map(st=>(st.weight||0)*(1+(st.reps||0)/30))));
+      const bests=sorted.map(s=>Math.max(...s.sets.filter(st=>st.weight).map(st=>(st.weight||0)*(1+(st.reps||0)/30))));
       const trend=bests.length>1?(bests[bests.length-1]>bests[0]?'up':'down'):null;
       const card=document.createElement('div'); card.className='ex-history-card';
       card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><div class="ex-hist-name">${name}</div>${trend==='up'?'<span class="trend-up">↑</span>':trend==='down'?'<span class="trend-down">↓</span>':''}</div>`;
       sorted.slice(-8).reverse().forEach(s=>{
-        const top=s.sets.filter(st=>st.weight).reduce((b,st)=>(st.weight||0)>(b.weight||0)?st:b,{});
-        const sstr=s.sets.filter(st=>st.weight).map(st=>`${st.weight}×${st.reps||'?'}`).join(', ');
-        card.innerHTML+=`<div class="hist-row"><span class="hist-date">${formatDate(s.date)}</span><span class="hist-sets">${sstr}</span><span class="hist-best">${top.weight?top.weight+'lb'+(top.rpe?' RPE'+top.rpe:''):''}</span></div>`;
+        const wsets=s.sets.filter(st=>st.weight);
+        const top=wsets.reduce((b,st)=>(st.weight||0)>(b.weight||0)?st:b,{});
+        const sstr=wsets.map(st=>`${st.weight}×${st.reps||'?'}`).join(', ');
+        card.innerHTML+=`<div class="hist-row"><span class="hist-date">${formatDate(s.date)}</span><span class="hist-sets">${sstr}</span><span class="hist-best">${top.weight?top.weight+'lb'+(top.rpe?' @'+top.rpe:''):''}</span></div>`;
       });
       body.appendChild(card);
     });
@@ -458,7 +512,7 @@ function renderHistory() {
     const rc=document.createElement('div'); rc.className='ex-history-card';
     rc.innerHTML='<div class="ex-hist-name">Running Log</div>';
     runLog.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12).forEach(r=>{
-      rc.innerHTML+=`<div class="hist-row"><span class="hist-date">${formatDate(r.date)}</span><span class="hist-sets">${r.distance?r.distance+'mi':''} ${r.duration||''}</span><span class="hist-best">${r.pace?r.pace+'/mi':''}</span></div>`;
+      rc.innerHTML+=`<div class="hist-row"><span class="hist-date">${formatDate(r.date)}</span><span class="hist-sets">${r.distance?r.distance+'mi':''} ${r.duration||''}</span><span class="hist-best">${r.pace?r.pace+'/mi':r.rpe?'RPE '+r.rpe:''}</span></div>`;
     });
     body.appendChild(rc);
   }
@@ -470,12 +524,27 @@ function renderProgram() {
   const body=document.getElementById('program-body'); body.innerHTML='';
   const block=currentBlock();
   const today=new Date();
-  const bs=new Date(block.start);
+  const bs=new Date(block.start+'T00:00:00');
   const elapsed=Math.max(0,Math.min(28,Math.floor((today-bs)/86400000)));
   const wkNum=Math.min(4,Math.max(1,Math.ceil((elapsed+1)/7)));
-  body.innerHTML+=`<div class="card mb-16"><div class="flex-between" style="margin-bottom:6px"><div><div style="font-size:17px;font-weight:600">Block ${block.num}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Started ${formatDate(block.start)}</div></div><span class="tag tag-lift">${block.focus}</span></div><div style="font-size:13px;color:var(--text2)">4-week hybrid · Upper/Lower lifting · Zone 2, Tempo, Intervals</div></div>`;
-  body.innerHTML+=`<div class="checkin-card"><div class="checkin-title">Block ${block.num+1} Check-In ✦</div><div class="checkin-sub">Complete week 4, then generate your next block with AI based on your focus areas and feedback.</div><h3 style="margin-bottom:10px">Emphasize next block:</h3><div class="checkin-options" id="checkin-opts">${[['more_sprints','More sprint / plyometric work'],['shoulder_hyp','Shoulder hypertrophy focus'],['posterior','Posterior chain (hamstrings / glutes)'],['upper_strength','Upper body strength emphasis'],['squat_focus','Squat strength focus'],['longer_runs','Longer aerobic base runs'],['more_tempo','More tempo / threshold running'],['deload_easy','Easier deload block']].map(([v,l])=>`<div class="checkin-opt"><input type="checkbox" id="opt-${v}" value="${v}"><label for="opt-${v}">${l}</label></div>`).join('')}</div><h3 style="margin-top:12px;margin-bottom:8px">Notes for AI:</h3><textarea class="notes-input" id="checkin-notes" placeholder="How did this block feel? Injuries? What went well or felt off?" style="margin-bottom:12px"></textarea><div style="font-size:11px;color:var(--text3);margin-bottom:6px">Anthropic API key (stored locally only)</div><input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-..." value="${STATE.apiKey||''}"><button class="generate-btn" id="gen-btn" onclick="generateNextBlock()"><div class="ai-spinner" id="gen-spinner"></div><span id="gen-text">Generate Block ${block.num+1} with AI ✦</span></button></div>`;
-  body.innerHTML+=`<h2 style="margin-top:8px">Block ${block.num} Schedule</h2>`;
+  body.innerHTML+=`<div class="card mb-16"><div class="flex-between" style="margin-bottom:6px"><div><div style="font-size:17px;font-weight:600">Block ${block.num}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Starts ${formatDate(block.start)}</div></div><span class="tag tag-lift">${block.focus}</span></div><div style="font-size:13px;color:var(--text2);margin-top:4px">4-week hybrid · Upper/Lower lifting · Gradual run build from ~30 min/week base</div></div>`;
+  body.innerHTML+=`<div class="checkin-card">
+    <div class="checkin-title">Block ${block.num+1} Check-In ✦</div>
+    <div class="checkin-sub">After week 4, select focus areas and generate your next block with AI.</div>
+    <h3 style="margin-bottom:10px">Emphasize next block:</h3>
+    <div class="checkin-options" id="checkin-opts">
+      ${[['more_sprints','More sprint / plyometric work'],['shoulder_hyp','Shoulder hypertrophy focus'],['posterior','Posterior chain (hamstrings / glutes)'],['upper_strength','Upper body strength emphasis'],['squat_focus','Squat strength focus'],['longer_runs','Longer aerobic runs'],['more_tempo','More tempo / threshold work'],['more_intervals','More interval / track work'],['deload_easy','Easier deload block']].map(([v,l])=>`<div class="checkin-opt"><input type="checkbox" id="opt-${v}" value="${v}"><label for="opt-${v}">${l}</label></div>`).join('')}
+    </div>
+    <h3 style="margin-top:12px;margin-bottom:8px">Notes for AI:</h3>
+    <textarea class="notes-input" id="checkin-notes" placeholder="How did this block feel? Any aches? What improved? What needs work?" style="margin-bottom:12px"></textarea>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Anthropic API key (stored locally only)</div>
+    <input type="password" class="api-input" id="api-key-input" placeholder="sk-ant-..." value="${STATE.apiKey||''}">
+    <button class="generate-btn" id="gen-btn" onclick="generateNextBlock()">
+      <div class="ai-spinner" id="gen-spinner"></div>
+      <span id="gen-text">Generate Block ${block.num+1} with AI ✦</span>
+    </button>
+  </div>`;
+  body.innerHTML+=`<h2 style="margin-top:4px;margin-bottom:12px">Block ${block.num} Schedule</h2>`;
   for(let w=1;w<=4;w++){
     const days=Object.entries(block.sessions).filter(([,s])=>s.week===w).sort(([a],[b])=>a.localeCompare(b));
     const wstart=days[0]?.[0];
@@ -483,7 +552,8 @@ function renderProgram() {
     wc.innerHTML=`<div style="font-size:14px;font-weight:600;color:${w===wkNum?'var(--accent)':'var(--text)'};margin-bottom:10px">Week ${w}${w===wkNum?' — Current':''}${w===4?' · Deload':''} ${wstart?'· '+formatDate(wstart):''}</div>`;
     days.forEach(([dk,s])=>{
       const logged=STATE.log[dk];
-      wc.innerHTML+=`<div class="block-week-row"><div><span style="font-size:11px;color:var(--text3);margin-right:8px">${dow(dk)}</span><span style="font-size:14px">${s.name}</span></div><span class="tag ${s.type==='lift'?'tag-lift':s.type==='run'?'tag-run':'tag-rest'}">${logged?'✓':s.type}</span></div>`;
+      const displayName=s.name.replace(/ W[1-4][abc]?$/,'');
+      wc.innerHTML+=`<div class="block-week-row"><div><span style="font-size:11px;color:var(--text3);margin-right:8px">${dow(dk)}</span><span style="font-size:14px">${displayName}</span></div><span class="tag ${s.type==='lift'?'tag-lift':s.type==='run'?'tag-run':'tag-rest'}">${logged?'✓':s.type}</span></div>`;
     });
     body.appendChild(wc);
   }
@@ -499,19 +569,27 @@ async function generateNextBlock() {
   document.getElementById('gen-spinner').style.display='block';
   document.getElementById('gen-text').textContent='Generating...';
   document.getElementById('gen-btn').disabled=true;
-  const logSummary=Object.entries(STATE.log).slice(-20);
-  const lifts=logSummary.filter(([,l])=>l.type==='lift').length;
-  const runs=logSummary.filter(([,l])=>l.type==='run').length;
+  const logEntries=Object.entries(STATE.log).slice(-20);
+  const lifts=logEntries.filter(([,l])=>l.type==='lift').length;
+  const runs=logEntries.filter(([,l])=>l.type==='run');
+  const avgDist=runs.length?( runs.reduce((a,[,r])=>a+(r.distance||0),0)/runs.length).toFixed(1):'N/A';
   const prompt=`You are an expert hybrid strength and running coach. Design a 4-week training block.
 
-ATHLETE: 15+ years lifting, 6 days/week (3 lift Upper/Lower, 3 run), goals balanced strength + running.
-EQUIPMENT: barbell, squat rack, adjustable bench, pullup bar, dumbbells, 45° hyperextension, Nordic curl machine, dip bars, duffalo bar, plyo box.
-STYLE: Alec Blenis hybrid.
+ATHLETE PROFILE:
+- 15+ years lifting, advanced
+- 6 days/week: Mon/Wed/Fri lift (Upper/Lower split), Tue/Thu/Sat run
+- Goals: equal strength + running development (Alec Blenis hybrid style)
+- Equipment: barbell, squat rack, adjustable bench, pullup bar, dumbbells, cable lat pulldown machine, 45° hyperextension, Nordic curl machine, dip bars, duffalo bar, plyo box
+- Shoulder note: avoid barbell overhead pressing — use dumbbells for all shoulder pressing movements
+- Running base: coming back from low volume (~30 min/week). Current Z2 pace ~11:30-12:30/mi. Build gradually.
 
 LAST BLOCK: Block ${block.num}, focus: ${block.focus}
-EMPHASIS FOR NEXT: ${opts.length>0?opts.join(', '):'balanced continuation'}
-ATHLETE NOTES: ${notes||'None'}
-RECENT LOG: ${lifts} lift sessions, ${runs} run sessions logged.
+EMPHASIS: ${opts.length>0?opts.join(', '):'balanced continuation, continue gradual run build'}
+NOTES: ${notes||'None'}
+RECENT LOG: ${lifts} lift sessions, ${runs.length} runs, avg run dist ${avgDist} mi
+
+Each exercise MUST include an "effort" field describing the target RPE or RIR (e.g. "RPE 8 — 2 reps in reserve").
+Running targets should reference the athlete's current fitness and build appropriately.
 
 Return ONLY valid JSON (no markdown):
 {
@@ -520,7 +598,7 @@ Return ONLY valid JSON (no markdown):
     {
       "week": 1,
       "lift": {
-        "Upper A": {"exercises":[{"name":"...","sets":4,"reps":"4-6","note":"..."}]},
+        "Upper A": {"exercises":[{"name":"...","sets":4,"reps":"4-6","note":"...","effort":"RPE 8 — 2 RIR"}]},
         "Lower A": {"exercises":[...]},
         "Upper B": {"exercises":[...]}
       },
@@ -532,9 +610,10 @@ Return ONLY valid JSON (no markdown):
     }
   ]
 }
-Include all 4 weeks. Week 4 is always deload (40% less volume). Adjust based on emphasis.`;
+All 4 weeks required. Week 4 = deload (40% volume reduction, keep intensity). Progress weeks 1-3.`;
+
   try {
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':STATE.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':STATE.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
     const data=await resp.json();
     if(data.error) throw new Error(data.error.message);
     const generated=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
@@ -551,20 +630,26 @@ Include all 4 weeks. Week 4 is always deload (40% less volume). Adjust based on 
 
 function applyGeneratedBlock(generated,newNum) {
   const prev=currentBlock();
-  const newStart=new Date(prev.start); newStart.setDate(newStart.getDate()+28);
+  const newStart=new Date(prev.start+'T00:00:00');
+  newStart.setDate(newStart.getDate()+28);
+  // Register new sessions in DEFAULT_SESSIONS with week suffix
   generated.weeks.forEach(wk=>{
     Object.entries(wk.lift).forEach(([sname,sdata])=>{
       const key=sname+(wk.week===4?' (deload)':'');
       DEFAULT_SESSIONS[key]={type:'lift',exercises:sdata.exercises};
     });
     Object.values(wk.run).forEach(rs=>{
-      DEFAULT_SESSIONS[rs.name]={type:'run',runType:rs.runType,target:rs.target};
+      const key=rs.name+' B'+(newNum)+'W'+wk.week;
+      DEFAULT_SESSIONS[key]={type:'run',runType:rs.runType,target:rs.target};
     });
     if(wk.week<=4){
-      WEEK_TEMPLATES[wk.week-1]={lift:Object.keys(wk.lift),run:Object.values(wk.run).map(r=>r.name)};
+      WEEK_TEMPLATES[wk.week-1]={
+        lift:Object.keys(wk.lift),
+        run:Object.values(wk.run).map((r,i)=>r.name+' B'+(newNum)+'W'+wk.week+(i>0?String.fromCharCode(97+i-1):''))
+      };
     }
   });
-  const newBlock=generateBlock(newNum,newStart);
+  const newBlock=generateBlock(newNum, dateKey(newStart));
   newBlock.focus=generated.focus;
   prev.checkin={completedAt:new Date().toISOString()};
   STATE.blocks.push(newBlock); save(STATE);
